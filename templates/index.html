@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dry Bean Classifier</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<main class="container">
+    <section class="hero">
+        <h1>Dry Bean Classifier</h1>
+        <p>Enter 16 features to predict the dry bean class.</p>
+    </section>
+
+    <section class="card">
+        <form id="prediction-form" class="grid-form">
+            <div class="field">
+                <label for="area">Area</label>
+                <input id="area" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="perimeter">Perimeter</label>
+                <input id="perimeter" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="majorAxisLength">MajorAxisLength</label>
+                <input id="majorAxisLength" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="minorAxisLength">MinorAxisLength</label>
+                <input id="minorAxisLength" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="aspectRation">AspectRation</label>
+                <input id="aspectRation" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="eccentricity">Eccentricity</label>
+                <input id="eccentricity" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="convexArea">ConvexArea</label>
+                <input id="convexArea" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="equivDiameter">EquivDiameter</label>
+                <input id="equivDiameter" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="extent">Extent</label>
+                <input id="extent" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="solidity">Solidity</label>
+                <input id="solidity" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="roundness">Roundness</label>
+                <input id="roundness" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="compactness">Compactness</label>
+                <input id="compactness" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="shapeFactor1">ShapeFactor1</label>
+                <input id="shapeFactor1" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="shapeFactor2">ShapeFactor2</label>
+                <input id="shapeFactor2" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="shapeFactor3">ShapeFactor3</label>
+                <input id="shapeFactor3" type="number" step="any" required />
+            </div>
+            <div class="field">
+                <label for="shapeFactor4">ShapeFactor4</label>
+                <input id="shapeFactor4" type="number" step="any" required />
+            </div>
+
+            <button type="submit" class="btn">Predict</button>
+        </form>
+    </section>
+
+    <section class="card result-card">
+        <h2>Result</h2>
+        <p id="status-text">Waiting for prediction...</p>
+        <div id="prediction-output" class="hidden">
+            <p class="predicted-label">Prediction: <strong id="predicted-class">-</strong></p>
+            <div id="probability-list"></div>
+        </div>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
