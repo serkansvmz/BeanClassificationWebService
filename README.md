@@ -157,4 +157,5 @@ Epoch:  150 | Loss: 0.1852 | Acc:  94.10% | Test Loss: 0.1745 | Test Acc:  94.50
 
 ## 📄 Lisans
 
+Apache License 2.0
 
