@@ -113,10 +113,8 @@ curl -X POST "http://localhost:8000/predict" \
 Yanıt:
 ```json
 {
-{
     "predicted_class": "SEKER",
     "probabilities": [0.01, 0.00, 0.01, 0.02, 0.01, 0.92, 0.03]
-}
 }
 ```
 
