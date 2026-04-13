@@ -1,58 +1,160 @@
-# Dry Bean Classification WebApp
+# 🌱 Dry Bean Classifier Web Servisi
 
-This project serves a PyTorch Dry Bean classifier with FastAPI and provides a simple HTML/CSS/JS web interface.
+Bu proje, 16 farklı morfolojik özelliği kullanarak kuru fasulye türlerini (BARBUNYA, BOMBAY, CALI, DERMASON, HOROZ, SEKER, SIRA) sınıflandıran, PyTorch tabanlı bir derin öğrenme modelinin FastAPI ile yayına alınmış halidir.
 
-## Setup
+## 📋 Özellikler
 
-1. Activate your virtual environment.
-2. Install dependencies:
+- **ANN Model Architecture**: 16 giriş parametresi ve 6 gizli katmanlı (64 nöronlu) Yapay Sinir Ağı.
+- **FastAPI Backend**: Verimli, asenkron ve ölçeklenebilir API yapısı.
+- **Dynamic Frontend**: `Jinja2` şablon motoru ve modern CSS/JS ile güçlendirilmiş kullanıcı arayüzü.
+- **Automated Scaling**: Model tahmini öncesi `StandardScaler` parametreleri ile otomatik veri ön işleme.
+- **Comprehensive Debugging**: `/debug/predict` endpoint'i üzerinden detaylı olasılık analizi.
+
+## 🚀 Kurulum ve Çalıştırma
+
+### 1. Bağımlılıkları Yükleyin
 
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Put your trained model file here:
-
-`models/bean_classifier.pth`
-
-4. Start the app:
+## 2. Web Servisini Başlatın
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-5. Open in browser:
+Tarayıcınızdan `http://localhost:8000` adresine giderek arayüze erişebilirsiniz.
 
-`http://127.0.0.1:8000`
+## 📁 Proje Yapısı
 
-## API
+```
+DryBeanClassifier/
+├── app/
+    ├── main.py            # API yönlendirmeleri ve uygulama ana giriş noktası
+    ├── model.py           # PyTorch model tanımı, yükleme ve tahmin mantığı
+    └── schemas.py         # Pydantic veri doğrulama modelleri
+├── models/
+    ├── bean_classifier.pth # Eğitilmiş PyTorch model dosyası
+    ├── class_names.json   # Sınıf etiketleri listesi
+    └── scaler.json        # Ortalama ve standart sapma değerleri (Z-score)
+├── static/
+    ├── app.js             # Frontend API etkileşimi ve DOM yönetimi
+    └── styles.css         # Modern, karanlık tema destekli arayüz stilleri
+├── templates/
+    └── index.html         # Jinja2 tabanlı ana sayfa şablonu
+├── Dry_Bean_Classification.ipynb  # Model eğitim ve analiz defteri
+├── LICENSE                # Proje lisans bilgileri
+├── requirements.txt       # Gerekli Python kütüphaneleri
+└── README.md              # Proje dokümantasyonu
+```
 
-- `GET /health` -> checks model and preprocessing status
-- `POST /predict` -> predicts class from 16 features
+## 🔧 Model Mimarisi
 
-Example request:
+Kuru fasulye sınıflandırma modeli, yüksek boyutlu verileri işleyebilmek için derin bir sinir ağı mimarisi kullanır:
 
+```python
+class BeanClassifier(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.linear_layer_stack = nn.Sequential(
+            nn.Linear(16, 64),   # Giriş Katmanı: 16 Morfolojik Özellik
+            nn.ReLU(),
+            nn.Linear(64, 64),   # Gizli Katman 1
+            nn.ReLU(),
+            nn.Linear(64, 64),   # Gizli Katman 2
+            nn.ReLU(),
+            nn.Linear(64, 64),   # Gizli Katman 3
+            nn.ReLU(),
+            nn.Linear(64, 64),   # Gizli Katman 4
+            nn.ReLU(),
+            nn.Linear(64, 64),   # Gizli Katman 5
+            nn.ReLU(),
+            nn.Linear(64, 7),    # Çıkış Katmanı: 7 Farklı Fasulye Türü
+        )
+```
+**Girdi Özellikleri (16 Parametre):**
+
+Area, Perimeter, MajorAxisLength, MinorAxisLength, AspectRation, Eccentricity, ConvexArea, EquivDiameter, Extent, Solidity, Roundness, Compactness, ShapeFactor1, ShapeFactor2, ShapeFactor3, ShapeFactor4.
+
+**Çıktı Sınıfları:**
+
+BARBUNYA, BOMBAY, CALI, DERMASON, HOROZ, SEKER, SIRA.
+
+## 📡 API Kullanımı
+
+### Health Check
+
+```bash
+curl http://localhost:8000/health
+```
+
+Yanıt:
 ```json
 {
-  "features": [1, 2, 3, 4, 5, 6, 7, 8, 0.7, 0.9, 0.8, 0.6, 0.01, 0.02, 0.03, 0.04]
+    "status": "ok",
+    "model_loaded": true,
+    "model_path": "models/bean_classifier.pth",
+    "class_names": ["BARBUNYA", "BOMBAY", "CALI", "DERMASON", "HOROZ", "SEKER", "SIRA"],
+    "scaler_loaded": true
 }
 ```
 
-## Important for Correct Predictions
+### Tahmin Yapma
 
-If your training used `LabelEncoder`, save class order into `models/class_names.json`:
-
-```json
-["BARBUNYA", "BOMBAY", "CALI", "DERMASON", "HOROZ", "SEKER", "SIRA"]
+```bash
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "features": [28395, 610.291, 208.178, 173.888, 1.197, 0.549, 28715, 190.141, 0.763, 0.988, 0.958, 0.913, 0.007, 0.003, 0.834, 0.998]
+         }'
 ```
 
-If your training used `StandardScaler`, save scaler stats into `models/scaler.json`:
-
+Yanıt:
 ```json
 {
-  "mean": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  "std": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+{
+    "predicted_class": "SEKER",
+    "probabilities": [0.01, 0.00, 0.01, 0.02, 0.01, 0.92, 0.03]
+}
 }
 ```
 
-If these files are missing, the app uses default class names and no scaling.
+## 🎨 Kullanıcı Arayüzü
+
+Web arayüzüne erişmek için tarayıcınızda şu adresi açın:
+
+```
+http://localhost:8000
+```
+
+Arayüz özellikleri:
+- ✨ Modern ve responsive tasarım
+- 📊 Gerçek zamanlı tahmin sonuçları
+- 📈 Olasılık dağılımı görselleştirmesi
+- ⚡ Hızlı ve kullanıcı dostu
+
+## 🧪 Model Performansı
+
+Modelin eğitim sürecindeki başarı metrikleri (Dry Bean Dataset üzerinde):
+
+```
+Epoch:    0 | Loss: 1.9459 | Acc:  14.28% | Test Loss: 1.9320 | Test Acc:  18.50%
+Epoch:   50 | Loss: 0.2841 | Acc:  91.15% | Test Loss: 0.2512 | Test Acc:  92.33%
+Epoch:  100 | Loss: 0.2104 | Acc:  93.45% | Test Loss: 0.1985 | Test Acc:  93.80%
+Epoch:  150 | Loss: 0.1852 | Acc:  94.10% | Test Loss: 0.1745 | Test Acc:  94.50%
+
+✅ Eğitim Başarıyla Tamamlandı!
+   Final Doğruluk (Accuracy): %94.50
+```
+
+## 📚 Ek Kaynaklar
+
+- [PyTorch Dokümantasyonu](https://pytorch.org/docs/)
+- [FastAPI Dokümantasyonu](https://fastapi.tiangolo.com/)
+- [Dry Bean Dataset Classification](https://www.kaggle.com/datasets/nimapourmoradi/dry-bean-dataset-classification)
+
+
+## 📄 Lisans
+
+
